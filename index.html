@@ -4,10 +4,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DevSpace | Web IDE</title>
+<title>DevSpace | Mobile Web IDE</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap');
 
 :root {
   --bg:#0b0e14;
@@ -16,233 +16,298 @@
   --border:#262c39;
   --text:#e5e9f2;
   --muted:#8791a5;
-  --accent:#7c83ff;
+  --accent:#7776ef;
   --green:#39c995;
 }
 * {box-sizing:border-box}
 body {
   margin:0;
+  height:100dvh;
+  overflow:hidden;
   background:var(--bg);
   color:var(--text);
   font-family:Inter,sans-serif;
-  height:100vh;
-  overflow:hidden;
 }
-button,input {font:inherit}
-button {cursor:pointer}
-.app {height:100vh;display:flex;flex-direction:column}
+button,input,textarea {font:inherit}
+button {cursor:pointer;touch-action:manipulation}
+.app {height:100dvh;display:flex;flex-direction:column}
 .topbar {
-  height:62px;
+  min-height:58px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 20px;
+  padding:0 16px;
   border-bottom:1px solid var(--border);
   background:#10131b;
-  gap:12px;
+  gap:10px;
 }
-.brand {display:flex;align-items:center;gap:11px;font-weight:700;font-size:17px}
+.brand {display:flex;align-items:center;gap:9px;font-size:16px;font-weight:700}
 .logo {
-  width:34px;height:34px;border-radius:10px;
+  width:34px;height:34px;border-radius:9px;
+  display:grid;place-items:center;
   background:linear-gradient(135deg,#8b81ff,#5956c9);
-  display:grid;place-items:center;font-size:18px;color:white;
+  color:white;font-size:17px;
 }
-.brand small {display:block;color:var(--muted);font-size:10px;font-weight:500;margin-top:3px}
-.top-actions {display:flex;gap:8px;align-items:center}
+.brand small {
+  display:block;font-size:9px;color:var(--muted);
+  font-weight:500;margin-top:3px;
+}
+.actions {display:flex;gap:7px;align-items:center}
 .btn {
+  padding:9px 12px;
   border:1px solid var(--border);
   background:var(--panel2);
   color:var(--text);
-  padding:9px 13px;
   border-radius:8px;
   font-size:12px;
   font-weight:600;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-  transition:.2s;
 }
-.btn:hover {border-color:#606b84;background:#202637}
 .btn.primary {background:#6968e8;border-color:#6968e8;color:white}
-.btn.primary:hover {background:#7978f5}
-.btn.green {background:#176b51;border-color:#176b51;color:white}
+.btn:hover {filter:brightness(1.15)}
 .projectbar {
-  height:48px;
-  display:flex;align-items:center;gap:12px;
-  padding:0 18px;border-bottom:1px solid var(--border);
+  min-height:43px;
+  display:flex;align-items:center;gap:9px;
+  padding:0 15px;
+  border-bottom:1px solid var(--border);
   background:#0e1118;
 }
+.project-label {font-size:10px;color:var(--muted);font-weight:600}
 .project-name {
-  background:transparent;border:0;color:var(--text);
-  font-size:13px;font-weight:600;width:190px;outline:none;
+  width:160px;max-width:45%;
+  background:transparent;border:0;outline:0;
+  color:var(--text);font-size:12px;font-weight:600;
 }
-.project-label {font-size:11px;color:var(--muted)}
-.status {margin-left:auto;color:var(--green);font-size:11px;display:flex;gap:7px;align-items:center}
+.status {
+  margin-left:auto;display:flex;align-items:center;gap:6px;
+  color:var(--green);font-size:10px;white-space:nowrap;
+}
 .dot {width:7px;height:7px;border-radius:50%;background:var(--green)}
 .workspace {
-  flex:1;min-height:0;display:grid;
-  grid-template-columns:220px minmax(300px,1fr) minmax(300px,1fr);
+  flex:1;min-height:0;
+  display:grid;
+  grid-template-columns:190px minmax(0,1fr) minmax(0,1fr);
 }
 .sidebar {
-  background:var(--panel);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;min-height:0;
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  min-height:0;
 }
 .side-title {
   padding:17px 15px 12px;
-  color:var(--muted);font-size:10px;font-weight:700;
-  letter-spacing:1px;text-transform:uppercase;
+  color:var(--muted);font-size:10px;
+  font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;
 }
 .file {
   display:flex;align-items:center;gap:10px;
-  padding:11px 15px;font-size:12px;color:#bac3d3;
-  cursor:pointer;border-left:2px solid transparent;
+  padding:13px 14px;
+  color:#bac3d3;font-size:12px;
+  border-left:2px solid transparent;
+  cursor:pointer;
 }
-.file:hover {background:#1a202d}
 .file.active {background:#202538;color:white;border-left-color:var(--accent)}
-.file-icon {width:16px;text-align:center;font-weight:700}
+.file-icon {width:17px;text-align:center;font-weight:700}
 .html-icon {color:#e68b53}
 .css-icon {color:#6399f5}
 .js-icon {color:#e5cb5c}
-.file-meta {margin-left:auto;color:#667087;font-size:10px}
-.sidebar-bottom {margin-top:auto;padding:14px;border-top:1px solid var(--border)}
-.tip {font-size:11px;color:var(--muted);line-height:1.6}
+.file-meta {margin-left:auto;font-size:9px;color:#667087}
+.sidebar-bottom {
+  margin-top:auto;padding:14px;
+  border-top:1px solid var(--border);
+  color:var(--muted);font-size:11px;line-height:1.6;
+}
 .editor-area {
-  min-width:0;display:flex;flex-direction:column;
+  min-width:0;min-height:0;
+  display:flex;flex-direction:column;
   border-right:1px solid var(--border);
 }
 .editor-toolbar {
-  height:48px;display:flex;align-items:center;
-  justify-content:space-between;padding:0 14px;
+  height:46px;flex-shrink:0;
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:0 10px;
   border-bottom:1px solid var(--border);
-  background:#11151e;
+  background:var(--panel);
 }
-.tabs {display:flex;align-items:center;gap:3px;height:100%}
+.tabs {height:100%;display:flex;align-items:center;gap:2px}
 .tab {
-  height:100%;padding:0 13px;border:0;
-  background:transparent;color:var(--muted);
-  font-size:11px;border-bottom:2px solid transparent;
+  height:100%;padding:0 12px;
+  border:0;border-bottom:2px solid transparent;
+  color:var(--muted);background:transparent;
+  font-size:11px;
 }
 .tab.active {color:white;border-bottom-color:var(--accent)}
-.editor-tools {display:flex;gap:6px}
+.editor-tools {display:flex;gap:4px}
 .icon-btn {
-  border:0;background:transparent;color:var(--muted);
-  padding:7px;border-radius:6px;font-size:12px;
+  border:0;background:transparent;
+  color:var(--muted);padding:8px;
+  border-radius:6px;font-size:11px;
 }
 .icon-btn:hover {background:#262c39;color:white}
 .editor {
-  display:none;flex:1;min-height:0;position:relative;
-  background:#0e1118;
+  display:none;flex:1;min-height:0;
+  background:#0e1118;overflow:hidden;
 }
 .editor.active {display:flex}
 .line-numbers {
-  width:44px;padding:15px 10px 15px 0;text-align:right;
-  color:#515a6c;font:12px/1.65 'JetBrains Mono',monospace;
-  overflow:hidden;white-space:pre;user-select:none;
+  flex-shrink:0;width:38px;
+  padding:14px 8px 14px 0;
+  text-align:right;white-space:pre;
+  overflow:hidden;user-select:none;
+  color:#515a6c;
   border-right:1px solid #1e2430;
+  font:12px/1.65 'JetBrains Mono',monospace;
 }
 textarea.code {
-  flex:1;width:0;resize:none;border:0;outline:none;
-  padding:15px 16px;background:transparent;color:#d7ddec;
+  flex:1;min-width:0;height:100%;
+  padding:14px;
+  resize:none;border:0;outline:0;
+  background:transparent;color:#d7ddec;
   font:12px/1.65 'JetBrains Mono',monospace;
-  tab-size:2;white-space:pre;overflow:auto;
-  caret-color:#aaaaff;
+  white-space:pre;overflow:auto;
+  tab-size:2;caret-color:#aaaaff;
+  -webkit-overflow-scrolling:touch;
 }
-textarea.code::selection {background:#44477b}
+textarea.code::placeholder {color:#525c70}
 .editor-footer {
-  height:30px;display:flex;align-items:center;
-  justify-content:space-between;padding:0 12px;
-  background:#11151e;border-top:1px solid var(--border);
+  height:27px;flex-shrink:0;
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:0 10px;
+  background:var(--panel);
+  border-top:1px solid var(--border);
   color:var(--muted);font-size:10px;
 }
-.preview-area {display:flex;flex-direction:column;min-width:0;background:#fff}
-.preview-toolbar {
-  height:48px;background:#11151e;color:var(--text);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 14px;border-bottom:1px solid var(--border);
+.preview-area {
+  display:flex;flex-direction:column;
+  min-width:0;min-height:0;background:white;
 }
-.preview-title {font-size:11px;font-weight:600;display:flex;gap:8px;align-items:center}
-.preview-actions {display:flex;gap:5px}
-.preview-frame {border:0;width:100%;height:100%;background:white}
-.preview-content {flex:1;min-height:0}
+.preview-toolbar {
+  height:46px;flex-shrink:0;
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:0 12px;
+  background:var(--panel);
+  color:var(--text);
+  border-bottom:1px solid var(--border);
+}
+.preview-title {font-size:11px;font-weight:600;display:flex;align-items:center;gap:8px}
+.preview-actions {display:flex;gap:3px}
+.preview-content {flex:1;min-height:0;position:relative}
+.preview-frame {width:100%;height:100%;border:0;background:white}
 .bottom-bar {
-  height:27px;background:#6868d9;display:flex;
-  align-items:center;justify-content:space-between;
-  padding:0 13px;color:white;font-size:10px;
+  min-height:25px;flex-shrink:0;
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:0 12px;
+  background:#6868d9;color:white;
+  font-size:10px;
 }
 .toast {
-  position:fixed;bottom:42px;right:20px;
-  background:#202637;border:1px solid #38425a;
-  padding:12px 17px;border-radius:9px;
-  color:white;font-size:12px;opacity:0;
-  transform:translateY(10px);pointer-events:none;
-  transition:.25s;z-index:20;
+  position:fixed;bottom:40px;left:50%;
+  transform:translate(-50%,15px);
+  opacity:0;pointer-events:none;
+  padding:11px 16px;border-radius:9px;
+  background:#252c3c;color:white;
+  border:1px solid #38425a;
+  font-size:12px;z-index:30;
+  transition:.2s;
+  max-width:90vw;text-align:center;
 }
-.toast.show {opacity:1;transform:translateY(0)}
+.toast.show {opacity:1;transform:translate(-50%,0)}
 .modal-backdrop {
-  position:fixed;inset:0;background:#000a;
-  display:none;align-items:center;justify-content:center;z-index:10;
+  position:fixed;inset:0;z-index:40;
+  display:none;align-items:center;justify-content:center;
+  padding:16px;background:#000a;
 }
 .modal-backdrop.show {display:flex}
 .modal {
-  width:min(420px,90vw);background:#171c27;
-  border:1px solid var(--border);border-radius:14px;padding:22px;
+  width:min(420px,100%);
+  background:#171c27;border:1px solid var(--border);
+  border-radius:14px;padding:20px;
 }
 .modal h3 {margin:0 0 10px;font-size:16px}
-.modal p {color:var(--muted);font-size:12px;line-height:1.6}
+.modal p {font-size:12px;color:var(--muted);line-height:1.6}
 .modal input {
-  width:100%;background:#0d1119;color:white;
+  width:100%;padding:12px;margin:10px 0 16px;
   border:1px solid var(--border);border-radius:8px;
-  padding:11px;margin:10px 0 16px;outline:none;
+  background:#0d1119;color:white;outline:none;
 }
 .modal-actions {display:flex;justify-content:flex-end;gap:8px}
+
+/* Mobile layout */
+.mobile-switch {display:none}
+
 @media(max-width:850px) {
-  .workspace {grid-template-columns:55px minmax(0,1fr)}
-  .sidebar {overflow:hidden}
-  .side-title {font-size:0;padding:14px 0}
-  .file {justify-content:center;padding:13px 0}
-  .file span:not(.file-icon) {display:none}
-  .file-meta,.sidebar-bottom {display:none}
-  .preview-area {display:none}
-  .preview-area.mobile-show {
-    display:flex;position:fixed;inset:110px 0 27px;z-index:5;
+  .workspace {
+    display:flex;
+    position:relative;
+    overflow:hidden;
   }
-  .topbar {padding:0 10px}
+  .sidebar {display:none}
+  .editor-area {
+    flex:1;
+    width:100%;
+    border-right:0;
+  }
+  .preview-area {display:none}
+  body.preview-mode .editor-area {display:none}
+  body.preview-mode .preview-area {
+    display:flex;
+    width:100%;
+    height:100%;
+  }
+  .mobile-switch {display:inline-flex}
+  .desktop-only {display:none}
+  .topbar {min-height:55px;padding:0 10px}
   .brand {font-size:14px}
-  .btn {padding:8px;font-size:11px}
-  .projectbar {padding:0 10px}
-  .project-name {width:125px}
+  .brand small {font-size:8px}
+  .logo {width:31px;height:31px}
+  .btn {padding:9px 10px;font-size:11px}
+  .projectbar {min-height:40px;padding:0 10px}
+  .project-name {width:120px}
+  .editor-toolbar {padding:0 6px}
+  .tab {padding:0 12px}
+  .preview-toolbar {height:45px}
+  .bottom-bar {min-height:24px}
 }
-@media(max-width:480px) {
-  .top-actions .optional {display:none}
-  .workspace {grid-template-columns:44px minmax(0,1fr)}
-  .tab {padding:0 8px;font-size:10px}
-  .editor-toolbar {padding:0 7px}
-  .editor-tools {gap:0}
+@media(max-width:420px) {
+  .actions {gap:4px}
+  .actions .export-btn {display:none}
+  .btn {padding:9px 8px;font-size:10px}
+  .tab {padding:0 9px;font-size:10px}
+  .editor-tools .icon-btn {padding:7px 5px}
+  .project-label {font-size:9px}
+  .project-name {font-size:11px;width:105px}
 }
 </style>
 </head>
 <body>
 <div class="app">
+
   <header class="topbar">
     <div class="brand">
       <div class="logo">&lt;/&gt;</div>
       <div>DevSpace<small>WEB DEVELOPMENT STUDIO</small></div>
     </div>
-    <div class="top-actions">
-      <button class="btn optional" id="previewToggle">Preview</button>
-      <button class="btn" id="downloadAll">↓ ZIP Export</button>
-      <button class="btn primary" id="saveProject">Save Project</button>
+    <div class="actions">
+      <button class="btn mobile-switch" id="mobileSwitch">Preview</button>
+      <button class="btn export-btn" id="downloadAll">↓ ZIP</button>
+      <button class="btn primary" id="saveProject">Export</button>
     </div>
   </header>
 
   <div class="projectbar">
     <span class="project-label">PROJECT</span>
-    <input class="project-name" id="projectName" value="My Website" aria-label="Project name">
-    <span class="status"><span class="dot"></span> Local workspace</span>
+    <input class="project-name" id="projectName"
+      value="" placeholder="Untitled project"
+      aria-label="Project name">
+    <span class="status"><span class="dot"></span> Local</span>
   </div>
 
   <main class="workspace">
+
     <aside class="sidebar">
       <div class="side-title">Explorer</div>
       <div class="file active" data-file="html">
@@ -258,10 +323,8 @@ textarea.code::selection {background:#44477b}
         <span>script.js</span><span class="file-meta">JS</span>
       </div>
       <div class="sidebar-bottom">
-        <div class="tip">
-          <strong>Quick tip</strong><br>
-          Edit your files separately. Your changes can be previewed and exported as a project.
-        </div>
+        <strong>Quick tip</strong><br>
+        Write your code in separate files and preview your work.
       </div>
     </aside>
 
@@ -270,97 +333,82 @@ textarea.code::selection {background:#44477b}
         <div class="tabs">
           <button class="tab active" data-file="html">HTML</button>
           <button class="tab" data-file="css">CSS</button>
-          <button class="tab" data-file="js">JavaScript</button>
+          <button class="tab" data-file="js">JS</button>
         </div>
         <div class="editor-tools">
-          <button class="icon-btn" id="copyCode" title="Copy code">Copy</button>
-          <button class="icon-btn" id="clearCode" title="Clear current file">Clear</button>
+          <button class="icon-btn" id="copyCode">Copy</button>
+          <button class="icon-btn" id="clearCode">Clear</button>
         </div>
       </div>
 
       <div class="editor active" data-editor="html">
         <div class="line-numbers" id="lines-html">1</div>
-        <textarea class="code" id="code-html" spellcheck="false" aria-label="HTML editor"><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Website</title>
-</head>
-<body>
-  <main class="container">
-    <h1>Welcome to my website</h1>
-    <p>Start building something amazing.</p>
-    <button id="helloBtn">Click me</button>
-  </main>
-</body>
-</html></textarea>
+        <textarea class="code" id="code-html"
+          spellcheck="false" autocapitalize="off"
+          autocomplete="off" autocorrect="off"
+          aria-label="HTML editor"
+          placeholder="Write your HTML code here..."></textarea>
       </div>
 
       <div class="editor" data-editor="css">
         <div class="line-numbers" id="lines-css">1</div>
-        <textarea class="code" id="code-css" spellcheck="false" aria-label="CSS editor">* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f3f4f6;
-  color: #202437;
-}
-.container {
-  text-align: center;
-  padding: 80px 20px;
-}
-button {
-  padding: 12px 20px;
-  border: 0;
-  border-radius: 8px;
-  background: #6968e8;
-  color: white;
-  cursor: pointer;
-}</textarea>
+        <textarea class="code" id="code-css"
+          spellcheck="false" autocapitalize="off"
+          autocomplete="off" autocorrect="off"
+          aria-label="CSS editor"
+          placeholder="Write your CSS code here..."></textarea>
       </div>
 
       <div class="editor" data-editor="js">
         <div class="line-numbers" id="lines-js">1</div>
-        <textarea class="code" id="code-js" spellcheck="false" aria-label="JavaScript editor">document.getElementById("helloBtn")?.addEventListener("click", () => {
-  alert("Hello from DevSpace!");
-});</textarea>
+        <textarea class="code" id="code-js"
+          spellcheck="false" autocapitalize="off"
+          autocomplete="off" autocorrect="off"
+          aria-label="JavaScript editor"
+          placeholder="Write your JavaScript code here..."></textarea>
       </div>
 
       <div class="editor-footer">
         <span id="languageLabel">HTML</span>
-        <span id="lineCount">Lines: 15</span>
+        <span id="lineCount">Lines: 1</span>
       </div>
     </section>
 
     <section class="preview-area" id="previewArea">
       <div class="preview-toolbar">
-        <div class="preview-title"><span class="dot"></span> Live Preview</div>
+        <div class="preview-title">
+          <span class="dot"></span> Live Preview
+        </div>
         <div class="preview-actions">
-          <button class="icon-btn" id="refreshPreview" title="Refresh preview">↻</button>
-          <button class="icon-btn" id="openPreview" title="Open preview in new tab">↗</button>
+          <button class="icon-btn" id="refreshPreview">↻ Refresh</button>
+          <button class="icon-btn" id="openPreview">↗ Open</button>
         </div>
       </div>
       <div class="preview-content">
-        <iframe class="preview-frame" id="previewFrame" sandbox="allow-scripts allow-forms allow-modals" title="Website preview"></iframe>
+        <iframe class="preview-frame" id="previewFrame"
+          sandbox="allow-scripts allow-forms allow-modals allow-popups"
+          title="Website preview"></iframe>
       </div>
     </section>
   </main>
 
   <footer class="bottom-bar">
-    <span>DevSpace Workspace</span>
+    <span>DevSpace</span>
     <span>HTML · CSS · JavaScript</span>
   </footer>
 </div>
 
 <div class="toast" id="toast"></div>
+
 <div class="modal-backdrop" id="modal">
   <div class="modal">
-    <h3>Save project</h3>
-    <p>Your project can be downloaded as a ZIP containing separate HTML, CSS and JavaScript files. This workspace does not upload anything to GitHub automatically.</p>
-    <input id="saveName" value="my-website" aria-label="Folder name">
+    <h3>Export project</h3>
+    <p>
+      Download your project as a ZIP file containing separate
+      HTML, CSS and JavaScript files.
+    </p>
+    <input id="saveName" placeholder="my-website"
+      aria-label="Folder name">
     <div class="modal-actions">
       <button class="btn" id="cancelModal">Cancel</button>
       <button class="btn primary" id="confirmSave">Export ZIP</button>
@@ -370,11 +418,13 @@ button {
 
 <script>
 const $ = id => document.getElementById(id);
+
 const files = {
   html: $("code-html"),
   css: $("code-css"),
   js: $("code-js")
 };
+
 let current = "html";
 let previewTimer;
 let lastPreview = "";
@@ -383,25 +433,38 @@ function notify(message) {
   const toast = $("toast");
   toast.textContent = message;
   toast.classList.add("show");
+
   clearTimeout(notify.timer);
-  notify.timer = setTimeout(() => toast.classList.remove("show"), 2300);
+  notify.timer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2200);
+}
+
+function isMobile() {
+  return window.matchMedia("(max-width:850px)").matches;
 }
 
 function activate(file) {
   current = file;
+
   document.querySelectorAll("[data-file]").forEach(el => {
     el.classList.toggle("active", el.dataset.file === file);
   });
+
   document.querySelectorAll("[data-editor]").forEach(el => {
     el.classList.toggle("active", el.dataset.editor === file);
   });
+
   document.querySelectorAll(".tab").forEach(el => {
     el.classList.toggle("active", el.dataset.file === file);
   });
+
   $("languageLabel").textContent =
     file === "js" ? "JavaScript" : file.toUpperCase();
+
   updateLines(file);
-  files[file].focus();
+  $("lineCount").textContent =
+    "Lines: " + files[file].value.split("\n").length;
 }
 
 document.querySelectorAll("[data-file]").forEach(el => {
@@ -409,25 +472,26 @@ document.querySelectorAll("[data-file]").forEach(el => {
 });
 
 function updateLines(file) {
-  const text = files[file].value;
-  const count = text.split("\n").length;
+  const count = files[file].value.split("\n").length;
   $("lines-" + file).textContent =
     Array.from({length:count}, (_,i) => i+1).join("\n");
-  if (file === current) $("lineCount").textContent = "Lines: " + count;
+
+  if (file === current) {
+    $("lineCount").textContent = "Lines: " + count;
+  }
 }
 
 Object.entries(files).forEach(([file, editor]) => {
   editor.addEventListener("input", () => {
     updateLines(file);
-    if (file === current) {
-      $("lineCount").textContent = "Lines: " + editor.value.split("\n").length;
-    }
     clearTimeout(previewTimer);
-    previewTimer = setTimeout(renderPreview, 500);
+    previewTimer = setTimeout(renderPreview, 350);
   });
+
   editor.addEventListener("scroll", () => {
     $("lines-" + file).scrollTop = editor.scrollTop;
   });
+
   editor.addEventListener("keydown", e => {
     if (e.key === "Tab") {
       e.preventDefault();
@@ -437,6 +501,7 @@ Object.entries(files).forEach(([file, editor]) => {
       editor.dispatchEvent(new Event("input"));
     }
   });
+
   updateLines(file);
 });
 
@@ -444,8 +509,11 @@ function buildDocument() {
   const html = files.html.value;
   const css = files.css.value;
   const js = files.js.value;
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
+
+  const doc = new DOMParser().parseFromString(
+    html || "<!DOCTYPE html><html><head></head><body></body></html>",
+    "text/html"
+  );
 
   const style = doc.createElement("style");
   style.textContent = css;
@@ -464,60 +532,55 @@ function renderPreview() {
     $("previewFrame").srcdoc = output;
     lastPreview = output;
   } catch (error) {
-    notify("Could not render preview.");
+    notify("Preview error");
     console.error(error);
   }
 }
 
 $("refreshPreview").addEventListener("click", renderPreview);
-$("previewToggle").addEventListener("click", () => {
-  $("previewArea").classList.toggle("mobile-show");
-  if (window.innerWidth <= 850) {
-    $("previewToggle").textContent =
-      $("previewArea").classList.contains("mobile-show")
-        ? "Editor" : "Preview";
-  }
+
+$("mobileSwitch").addEventListener("click", () => {
+  const isPreview = document.body.classList.toggle("preview-mode");
+
+  $("mobileSwitch").textContent =
+    isPreview ? "Editor" : "Preview";
+
+  if (isPreview) renderPreview();
 });
 
 $("openPreview").addEventListener("click", () => {
   const output = lastPreview || buildDocument();
   const blob = new Blob([output], {type:"text/html"});
   const url = URL.createObjectURL(blob);
+
   const win = window.open(url, "_blank");
-  if (!win) notify("Allow pop-ups to open preview.");
+
+  if (!win) notify("Allow pop-ups to open preview");
+
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 });
 
 $("copyCode").addEventListener("click", async () => {
+  const value = files[current].value;
+
   try {
-    await navigator.clipboard.writeText(files[current].value);
-    notify("Code copied!");
+    await navigator.clipboard.writeText(value);
+    notify("Code copied");
   } catch {
     files[current].select();
-    document.execCommand("copy");
-    notify("Copy attempted.");
+    const success = document.execCommand("copy");
+    notify(success ? "Code copied" : "Select and copy manually");
   }
 });
 
 $("clearCode").addEventListener("click", () => {
-  if (confirm("Clear the current file code?")) {
-    files[current].value = "";
-    updateLines(current);
-    renderPreview();
-    notify("File cleared.");
-  }
-});
+  if (!confirm("Clear the current file?")) return;
 
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
-}
+  files[current].value = "";
+  updateLines(current);
+  renderPreview();
+  notify("File cleared");
+});
 
 function safeName(value) {
   return value.trim().toLowerCase()
@@ -525,55 +588,107 @@ function safeName(value) {
     .replace(/\s+/g, "-") || "my-website";
 }
 
+function exportHTML() {
+  let html = files.html.value.trim();
+
+  if (!html) {
+    html = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n" +
+      '  <meta charset="UTF-8">\n' +
+      '  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+      "  <title>" + ($("projectName").value || "My Website") +
+      "</title>\n</head>\n<body>\n</body>\n</html>";
+  }
+
+  const doc = new DOMParser().parseFromString(html, "text/html");
+
+  if (!doc.querySelector('link[rel="stylesheet"][href="style.css"]')) {
+    const link = doc.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "style.css";
+    doc.head.appendChild(link);
+  }
+
+  if (!doc.querySelector('script[src="script.js"]')) {
+    const script = doc.createElement("script");
+    script.src = "script.js";
+    doc.body.appendChild(script);
+  }
+
+  return "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
+}
+
 async function exportZip() {
   if (!window.JSZip) {
     notify("ZIP library unavailable. Check internet.");
     return;
   }
-  const name = safeName($("saveName").value || $("projectName").value);
+
+  const name = safeName($("saveName").value);
+  const projectName = $("projectName").value || "My Website";
+
   const zip = new JSZip();
-  zip.file("index.html", files.html.value);
+
+  zip.file("index.html", exportHTML());
   zip.file("style.css", files.css.value);
   zip.file("script.js", files.js.value);
-  zip.file("README.md",
-`# ${$("projectName").value || "My Website"}
 
-A website project created using DevSpace.
+  zip.file("README.md",
+`# ${projectName}
+
+Created using DevSpace.
 
 ## Files
 - index.html
 - style.css
 - script.js
 
-## Usage
-Open index.html in your browser.
+Open index.html in your browser to view your website.
 `);
+
   try {
-    const blob = await zip.generateAsync({type:"blob"});
-    downloadBlob(blob, name + ".zip");
+    const blob = await zip.generateAsync({
+      type:"blob",
+      compression:"DEFLATE",
+      compressionOptions:{level:6}
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = name + ".zip";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+
     $("modal").classList.remove("show");
-    notify("ZIP export ready!");
+    notify("ZIP export started");
   } catch (error) {
     console.error(error);
-    notify("Export failed.");
+    notify("Export failed");
   }
 }
 
-$("downloadAll").addEventListener("click", () => {
-  $("saveName").value = safeName($("projectName").value);
+function openExport() {
+  const project = $("projectName").value || "my-website";
+  $("saveName").value = safeName(project);
   $("modal").classList.add("show");
-});
-$("saveProject").addEventListener("click", () => {
-  $("saveName").value = safeName($("projectName").value);
-  $("modal").classList.add("show");
-});
+}
+
+$("downloadAll").addEventListener("click", openExport);
+$("saveProject").addEventListener("click", openExport);
+$("confirmSave").addEventListener("click", exportZip);
+
 $("cancelModal").addEventListener("click", () => {
   $("modal").classList.remove("show");
 });
-$("confirmSave").addEventListener("click", exportZip);
 
 $("modal").addEventListener("click", e => {
-  if (e.target === $("modal")) $("modal").classList.remove("show");
+  if (e.target === $("modal")) {
+    $("modal").classList.remove("show");
+  }
 });
 
 renderPreview();
